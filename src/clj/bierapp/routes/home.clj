@@ -2,7 +2,8 @@
   (:require [bierapp.layout :as layout]
             [compojure.core :refer [defroutes GET]]
             [ring.util.http-response :as response]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [bierapp.db.core :as db]))
 
 (defn home-page []
   (layout/render "home.html"))

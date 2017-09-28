@@ -21,8 +21,9 @@
 (conman/bind-connection *db*
                         "sql/users.sql"
                         "sql/rings.sql"
-                        "transactions.sql"
-                        "consumptions.sql")
+                        "sql/transactions.sql"
+                        "sql/consumptions.sql"
+                        "sql/cashlog.sql")
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array

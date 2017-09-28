@@ -1,13 +1,14 @@
--- :name create-transaction! :! :n
+-- :name create-transaction! :<! :n
 -- :doc creates a new transaction record
 INSERT INTO transactions
-(used_id, amount, date)
-VALUES (:user_id, :amount, :date);
+(from_id, amount, date)
+VALUES (:from_id, :amount, to_date(:date, 'YYYYMMDD'))
+RETURNING id;
 
 -- :name update-transaction! :! :n
 -- :doc update an existing transaction record
 UPDATE transactions
-SET used_id = :user_id, amount = :amount, date = :date
+SET from_id = :from_id, amount = :amount, date = :date
 WHERE id = :id;
 
 -- :name get-transaction :? :1
