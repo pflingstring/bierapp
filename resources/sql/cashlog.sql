@@ -8,5 +8,5 @@ RETURNING id;
 -- :name update-cash-balance! :! :n
 -- :doc updates the balance after a transaction was made
 UPDATE cash_log
-SET amount = amount + :amount
+SET amount = :amount
 WHERE id = :id;
