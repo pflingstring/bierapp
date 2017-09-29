@@ -24,5 +24,8 @@
   [user-id amount]
   (when (<= amount 0)
     (throw (IllegalArgumentException. "Amount cannot be negative or zero!")))
-  (db/update-user-balance! {:id user-id
-                            :balance (- amount)}))
+
+  (let [old-balance (-> (db/get-user-balance {:id user-id})
+                        (:balance))]
+    (db/update-user-balance! {:id      user-id
+                              :balance (- old-balance amount)})))

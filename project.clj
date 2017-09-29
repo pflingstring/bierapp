@@ -6,6 +6,7 @@
   :dependencies [[buddy "1.3.0"]
                  [clj-time "0.14.0"]
                  [cljs-ajax "0.7.2"]
+                 [cheshire "5.8.0"]
                  [compojure "1.6.0"]
                  [conman "0.6.8"]
                  [cprop "0.1.11"]

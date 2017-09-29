@@ -1,3 +1,7 @@
+----------------------------
+---   BASIC OPERATIONS   ---
+----------------------------
+
 -- :name create-ring! :! :n
 -- :doc creates a new ring record
 INSERT INTO rings
@@ -19,3 +23,9 @@ WHERE id = :id;
 -- :doc delete a ring given the id
 DELETE FROM rings
 WHERE id = :id;
+
+-- :name get-ring-price :? :1
+-- :doc retrieve a ring price given its color
+SELECT price
+FROM rings
+WHERE color = :color;

@@ -2,7 +2,7 @@
 -- :doc creates a new consumption record
 INSERT INTO consumptions
 (user_id, date, rings)
-VALUES (user_id, date, rings);
+VALUES (:user_id, to_date(:date, 'YYYYMMDD'), :rings);
 
 -- :name update-consumption! :! :n
 -- :doc update an existing consumption record
