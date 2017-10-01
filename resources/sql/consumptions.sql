@@ -1,8 +1,8 @@
 -- :name create-consumption! :! :n
 -- :doc creates a new consumption record
 INSERT INTO consumptions
-(user_id, date, rings)
-VALUES (:user_id, to_date(:date, 'YYYYMMDD'), :rings);
+(user_id, rings, transaction_id, date)
+VALUES (:user_id, :rings, :transaction_id, to_date(:date, 'YYYYMMDD'));
 
 -- :name update-consumption! :! :n
 -- :doc update an existing consumption record

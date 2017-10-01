@@ -23,7 +23,7 @@
                         "sql/rings.sql"
                         "sql/transactions.sql"
                         "sql/consumptions.sql"
-                        "sql/cashlog.sql")
+                        "sql/balance_log.sql")
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array
