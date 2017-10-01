@@ -13,15 +13,22 @@
                     :email      email
                     :pass       pass
                     :balance    balance}))
+
 (defn get-balance
   [id]
   (-> (db/get-user-balance {:id id})
       (:balance)))
 
-(defn update-balance!
+(defn update-balance-with!
   [id balance]
   (db/update-user-balance! {:id      id
                             :balance balance}))
+
+(defn update-balance-by!
+  [id amount]
+  (let [old-balance (get-balance id)
+        new-balance (+ old-balance amount)]
+    (update-balance-with! id new-balance)))
 
 (defn deposit-money!
   [user-id amount date]
@@ -34,7 +41,7 @@
           transaction (-> (transaction/create user-id amount date) (:id))]
       (cash/deposit amount transaction)
       (log/create-entry! user-id transaction old-balance new-balance)
-      (update-balance! user-id new-balance))))
+      (update-balance-with! user-id new-balance))))
 
 (defn deduct-money!
   [user-id amount]
@@ -43,4 +50,4 @@
 
   (let [old-balance (get-balance user-id)
         new-balance (- old-balance amount)]
-    (update-balance! user-id new-balance)))
+    (update-balance-with! user-id new-balance)))

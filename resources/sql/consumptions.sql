@@ -4,6 +4,13 @@ INSERT INTO consumptions
 (user_id, rings, transaction_id, date)
 VALUES (:user_id, :rings, :transaction_id, to_date(:date, 'YYYYMMDD'));
 
+-- :name update-consumption-rings! :! :n
+-- :doc updates the ring field
+UPDATE consumptions
+SET rings = :rings
+WHERE id = :id;
+
+
 -- :name update-consumption! :! :n
 -- :doc update an existing consumption record
 UPDATE consumptions

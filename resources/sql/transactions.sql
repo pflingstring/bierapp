@@ -20,3 +20,8 @@ WHERE id = :id;
 -- :doc delete a transaction given the id
 DELETE FROM transactions
 WHERE id = :id;
+
+-- :name update-transaction-amount! :! :n
+UPDATE transactions
+SET amount = :amount
+WHERE id = :id

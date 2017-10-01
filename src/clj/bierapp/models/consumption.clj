@@ -13,6 +13,10 @@
                            :transaction_id transaction-id
                            :date           date}))
 
+(defn get-by-id
+  [id]
+  (db/get-consumption {:id id}))
+
 (defn add-rings-to-user
   [user-id rings date]
   (conman/with-transaction [db/*db*]
@@ -23,3 +27,23 @@
       (u/deduct-money! user-id rings-price)
       (log/create-entry! user-id transaction old-balance new-balance)
       (create user-id rings transaction date))))
+
+(defn update-consumption-rings
+  [id rings]
+  (db/update-consumption-rings! {:id    id
+                                 :rings (db/to-pg-json rings)}))
+
+(defn update-rings
+  [id rings]
+  (let [old-entry (get-by-id id)
+        old-price (r/calculate-price (:rings old-entry))
+        new-price (r/calculate-price rings)
+        trans-id  (:transaction_id old-entry)
+        old-log   (log/get-by-transaction-id trans-id)]
+    (conman/with-transaction [db/*db*]
+      (update-consumption-rings id rings)
+      (t/update-amount trans-id (- (Math/abs ^double new-price)))
+      (log/update-entry! (:id old-log) (- (:old_amount old-log)
+                                          new-price))
+      (u/update-balance-by! (:user_id old-entry)
+                            (- old-price new-price)))))
