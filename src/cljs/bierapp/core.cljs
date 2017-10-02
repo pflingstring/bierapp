@@ -1,90 +1,82 @@
 (ns bierapp.core
-  (:require [reagent.core :as r]
-            [re-frame.core :as rf]
-            [secretary.core :as secretary]
-            [goog.events :as events]
-            [goog.history.EventType :as HistoryEventType]
-            [markdown.core :refer [md->html]]
-            [ajax.core :refer [GET POST]]
-            [bierapp.ajax :refer [load-interceptors!]]
-            [bierapp.events])
+  (:require
+    [cljsjs.material-ui]
+    [cljs-react-material-ui.core :as ui]
+    [cljs-react-material-ui.icons :as ic]
+
+    [reagent.core :as r]
+    [re-frame.core :as rf]
+
+    [ajax.core :refer [GET POST]]
+    [bierapp.ajax :refer [load-interceptors!]]
+    [bierapp.events]
+
+    [goog.events :as events]
+    [goog.history.EventType :as HistoryEventType]
+    [reagent.core :as reagent])
   (:import goog.History))
 
-(defn nav-link [uri title page collapsed?]
-  (let [selected-page (rf/subscribe [:page])]
-    [:li.nav-item
-     {:class (when (= page @selected-page) "active")}
-     [:a.nav-link
-      {:href uri
-       :on-click #(reset! collapsed? true)} title]]))
+(defn navbar
+  []
+  (ui/mui-theme-provider
+    {:mui-theme (ui/get-mui-theme)}
 
-(defn navbar []
-  (r/with-let [collapsed? (r/atom true)]
-    [:nav.navbar.navbar-dark.bg-primary
-     [:button.navbar-toggler.hidden-sm-up
-      {:on-click #(swap! collapsed? not)} "☰"]
-     [:div.collapse.navbar-toggleable-xs
-      (when-not @collapsed? {:class "in"})
-      [:a.navbar-brand {:href "#/"} "bierapp"]
-      [:ul.nav.navbar-nav
-       [nav-link "#/" "Home" :home collapsed?]
-       [nav-link "#/about" "About" :about collapsed?]]]]))
+    (ui/app-bar
+      {:title                         "bierapp"
+       :on-left-icon-button-touch-tap #(rf/dispatch [:open-drawer])})))
 
-(defn about-page []
-  [:div.container
-   [:div.row
-    [:div.col-md-12
-     [:img {:src (str js/context "/img/warning_clojure.png")}]]]])
+(defn drawer
+  []
+  (ui/mui-theme-provider
+    {:mui-theme (ui/get-mui-theme)}
 
-(defn home-page []
-  [:div.container
-   (when-let [docs @(rf/subscribe [:docs])]
-     [:div.row>div.col-sm-12
-      [:div {:dangerouslySetInnerHTML
-             {:__html (md->html docs)}}]])])
+    (ui/drawer
+      {:docked            false
+       :open              @(rf/subscribe [:drawer-status])
+       :on-request-change #(rf/dispatch  [:close-drawer])}
+
+      (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :home])}
+                    "Home")
+
+      (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :about])}
+                    "About")
+
+      (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :users])}
+                    "Users"))))
+
+(defn home-page
+  []
+  [:div
+   [:p "Welcome to the home page"]])
+
+(defn about-page
+   []
+   [:div
+    [:p "About Page"]])
+
+(defn user-page
+  []
+  [:div "Users"])
 
 (def pages
-  {:home #'home-page
-   :about #'about-page})
+  {:home  #'home-page
+   :about #'about-page
+   :users #'user-page})
 
-(defn page []
+(defn complete-page []
   [:div
+   [drawer]
    [navbar]
    [(pages @(rf/subscribe [:page]))]])
 
 ;; -------------------------
-;; Routes
-(secretary/set-config! :prefix "#")
-
-(secretary/defroute "/" []
-  (rf/dispatch [:set-active-page :home]))
-
-(secretary/defroute "/about" []
-  (rf/dispatch [:set-active-page :about]))
-
-;; -------------------------
-;; History
-;; must be called after routes have been defined
-(defn hook-browser-navigation! []
-  (doto (History.)
-    (events/listen
-      HistoryEventType/NAVIGATE
-      (fn [event]
-        (secretary/dispatch! (.-token event))))
-    (.setEnabled true)))
-
-;; -------------------------
 ;; Initialize app
-(defn fetch-docs! []
-  (GET "/docs" {:handler #(rf/dispatch [:set-docs %])}))
 
 (defn mount-components []
   (rf/clear-subscription-cache!)
-  (r/render [#'page] (.getElementById js/document "app")))
+  (r/render [#'complete-page] (.getElementById js/document "app")))
 
 (defn init! []
   (rf/dispatch-sync [:initialize-db])
   (load-interceptors!)
-  (fetch-docs!)
-  (hook-browser-navigation!)
   (mount-components))

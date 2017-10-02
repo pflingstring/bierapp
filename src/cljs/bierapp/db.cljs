@@ -1,4 +1,6 @@
 (ns bierapp.db)
 
 (def default-db
-  {:page :home})
+  {:page           :home
+   :drawer-opened? false})
+
