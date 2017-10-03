@@ -45,13 +45,76 @@
       (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :user])}
                     "Users"))))
 
+(defn select-name
+  []
+  (ui/mui-theme-provider
+    {:mui-theme (ui/get-mui-theme)}
+
+    (ui/auto-complete
+      {:hint-text            "Name"
+       :dataSource           ["alb" "boa" "ceoa" "deva" "eva" "folia"]
+       :filter               (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter")
+       :disable-focus-ripple false
+       :on-new-request       (fn [name _]
+                               (rf/dispatch [:add-consumption-entry name])
+                               (.focus (.getElementById js/document "ringColor")))
+       :id                   "nameSelector"})))
+
+(defn select-ring-color
+  []
+  (ui/mui-theme-provider
+    {:mui-theme (ui/get-mui-theme)}
+
+    (ui/auto-complete
+      {:hint-text      "Ring color"
+       :search-text    @(rf/subscribe [:ring-color-input])
+       :dataSource     ["white" "gold" "brown" "pink"]
+       :filter         (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter")
+       :on-new-request (fn [color _]
+                         (rf/dispatch [:add-ring-color {(keyword color) 0}])
+                         (rf/dispatch [:set-ring-color-input color])
+                         (rf/dispatch [:set-current-ring-color color])
+                         (.focus (.getElementById js/document "ringNr")))
+       :id             "ringColor"})))
+
+(defn select-ring-nr
+  []
+  (ui/mui-theme-provider
+    {:mui-theme (ui/get-mui-theme)}
+
+    (ui/auto-complete
+      {:hint-text       "number"
+       :search-text     @(rf/subscribe [:ring-number-input])
+       :dataSource      []
+       :id              "ringNr"
+       :on-update-input (fn [str _ _]
+                          (rf/dispatch [:set-ring-nr-input str]))
+       :on-new-request  (fn [nr _]
+                          (rf/dispatch [:clear-ring-color-input])
+                          (rf/dispatch [:clear-ring-nr-input])
+                          (rf/dispatch [:add-ring-number nr])
+                          (.focus (.getElementById js/document "ringColor")))})))
+
+(defn current-rings-for-user
+  []
+  (let [rings @(rf/subscribe [:current-rings])]
+    [:div
+     [:p (str rings)]]))
+
+(defn add-rings
+  []
+  [:div
+   (select-name)
+   (select-ring-color)
+   (select-ring-nr)
+   ])
+
 (defn home-page
   []
   [:div
-   [:p "Welcome to the home page"]
-   [:a {:href (url-for :about)} "Go to About page"]
-   [:br]
-   [:a {:href (url-for :user)}  "Go to User page"]])
+   [:h2 "Welcome to the bierapp"]
+   (add-rings)
+   (current-rings-for-user)])
 
 (defn about-page
    []
