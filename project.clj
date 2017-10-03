@@ -4,6 +4,7 @@
   :url "http://example.com/FIXME"
 
   :dependencies [[buddy "1.3.0"]
+                 [bidi "2.1.2"]
                  [clj-time "0.14.0"]
                  [cljs-ajax "0.7.2"]
                  [cljs-react-material-ui "0.2.48"]
@@ -14,6 +15,7 @@
                  [conman "0.6.8"]
                  [cprop "0.1.11"]
                  [funcool/struct "1.1.0"]
+                 [kibu/pushy "0.3.8"]
                  [luminus-immutant "0.2.3"]
                  [luminus-migrations "0.4.2"]
                  [luminus-nrepl "0.1.4"]
@@ -38,7 +40,7 @@
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.6.2"]
                  [ring/ring-defaults "0.3.1"]
-                 [secretary "1.2.3"]
+                 [venantius/accountant "0.2.0"]
                  [selmer "1.11.1"]]
 
   :min-lein-version "2.0.0"

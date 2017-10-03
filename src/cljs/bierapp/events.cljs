@@ -1,5 +1,6 @@
 (ns bierapp.events
   (:require [bierapp.db :as db]
+            [bierapp.routes :as routes]
             [re-frame.core :refer [dispatch reg-event-db reg-sub]]))
 
 (reg-event-db
@@ -29,6 +30,7 @@
 (reg-event-db
   :drawer-navigate
   (fn [db [_ page]]
+    (routes/accountant-navigate! page)
     (dispatch [:close-drawer])
     (dispatch [:set-active-page page])))
 

@@ -7,6 +7,7 @@
     [reagent.core :as r]
     [re-frame.core :as rf]
 
+    [bierapp.routes :refer [url-for hook-browser-navigation!]]
     [ajax.core :refer [GET POST]]
     [bierapp.ajax :refer [load-interceptors!]]
     [bierapp.events]
@@ -41,27 +42,33 @@
       (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :about])}
                     "About")
 
-      (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :users])}
+      (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :user])}
                     "Users"))))
 
 (defn home-page
   []
   [:div
-   [:p "Welcome to the home page"]])
+   [:p "Welcome to the home page"]
+   [:a {:href (url-for :about)} "Go to About page"]
+   [:br]
+   [:a {:href (url-for :user)}  "Go to User page"]])
 
 (defn about-page
    []
    [:div
-    [:p "About Page"]])
+    [:p "About Page"]
+    [:a {:href (url-for :home)} "Go to Home page"]])
 
 (defn user-page
   []
-  [:div "Users"])
+  [:div
+   [:p "Users"]
+   [:a {:href (url-for :home)} "Go to Home page"]])
 
 (def pages
   {:home  #'home-page
    :about #'about-page
-   :users #'user-page})
+   :user  #'user-page})
 
 (defn complete-page []
   [:div
@@ -79,4 +86,5 @@
 (defn init! []
   (rf/dispatch-sync [:initialize-db])
   (load-interceptors!)
+  (hook-browser-navigation!)
   (mount-components))
