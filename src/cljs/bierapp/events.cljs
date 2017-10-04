@@ -41,13 +41,10 @@
 (reg-event-db
   :add-consumption-entry
   (fn [db [_ name]]
-    (assoc-in db [:rings (:current-position db)] {:name  name
-                                                  :rings {}})))
-
-(reg-event-db
-  :inc-position
-  (fn [db [_ name]]
-    (update db :current-user inc)))
+    (let [path [:rings (:current-position db)]]
+      (dispatch [:set-current-name-input name])
+      (assoc-in db path {:name  name
+                         :rings {}}))))
 
 (reg-event-db
   :add-ring-color
@@ -57,12 +54,6 @@
           current-rings (get-in db path)]
       (assoc-in db path (merge current-rings
                                color)))))
-
-(reg-event-db
-  :set-current-ring-color
-  (fn [db [_ color]]
-    (assoc db :current-ring-color color)))
-
 (reg-event-db
   :add-ring-number
   (fn [db [_ nr]]
@@ -70,14 +61,9 @@
       (assoc-in db path nr))))
 
 (reg-event-db
-  :clear-ring-nr-input
-  (fn [db _]
-    (assoc db :ring-number-input "")))
-
-(reg-event-db
-  :clear-ring-color-input
-  (fn [db _]
-    (assoc db :ring-color-input "")))
+  :set-current-name-input
+  (fn [db [_ name]]
+    (assoc db :current-name-input name)))
 
 (reg-event-db
   :set-ring-color-input
@@ -89,12 +75,40 @@
   (fn [db [_ nr]]
     (assoc db :ring-number-input nr)))
 
-;;subscriptions
+(reg-event-db
+  :set-current-ring-color
+  (fn [db [_ color]]
+    (assoc db :current-ring-color color)))
+
+(reg-event-db
+  :clear-ring-color-input
+  (fn [db _]
+    (assoc db :ring-color-input "")))
+
+(reg-event-db
+  :clear-ring-nr-input
+  (fn [db _]
+    (assoc db :ring-number-input "")))
+
+(reg-event-db
+  :clear-name-input
+  (fn [db _]
+    (assoc db :current-name-input "")))
+
+(reg-event-db
+  :inc-position
+  (fn [db [_ name]]
+    (update db :current-position inc)))
+
+
+;; ------------------
+;; Ring subscriptions
+;; ------------------
 
 (reg-sub
-  :current-rings
+  :name-input
   (fn [db _]
-    (get-in db [:rings (:current-position db) :rings])))
+    (:current-name-input db)))
 
 (reg-sub
   :ring-color-input
@@ -107,9 +121,18 @@
     (:ring-number-input db)))
 
 (reg-sub
-  :current-position
+  :current-rings
   (fn [db _]
-    (:current-position db)))
+    (get-in db [:rings (:current-position db) :rings])))
+
+;; ---------------------
+;; General subscriptions
+;; ---------------------
+
+(reg-sub
+  :drawer-status
+  (fn [db _]
+    (:drawer-opened? db)))
 
 (reg-sub
   :page
@@ -117,11 +140,6 @@
     (:page db)))
 
 (reg-sub
-  :docs
+  :current-position
   (fn [db _]
-    (:docs db)))
-
-(reg-sub
-  :drawer-status
-  (fn [db _]
-    (:drawer-opened? db)))
+    (:current-position db)))

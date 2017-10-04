@@ -30,7 +30,7 @@
 (defn drawer
   []
   [ui/mui-theme-provider
-    {:mui-theme (ui/get-mui-theme)}
+   {:mui-theme (get-mui-theme)}
 
     [ui/drawer
       {:docked            false
@@ -53,12 +53,13 @@
 
     [ui/auto-complete
       {:hint-text            "Name"
+       :search-text          @(rf/subscribe [:name-input])
        :full-width           true
        :dataSource           ["alb" "boa" "ceoa" "deva" "eva" "folia"]
        :filter               (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter")
-       :disable-focus-ripple false
        :on-new-request       (fn [name _]
                                (rf/dispatch [:add-consumption-entry name])
+                               (rf/dispatch [:clear-ring-color-input])
                                (.focus (.getElementById js/document "ringColor")))
        :id                   "nameSelector"}]])
 
@@ -74,10 +75,15 @@
        :dataSource     ["white" "gold" "brown" "pink"]
        :filter         (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter")
        :on-new-request (fn [color _]
-                         (rf/dispatch [:add-ring-color {(keyword color) 0}])
-                         (rf/dispatch [:set-ring-color-input color])
-                         (rf/dispatch [:set-current-ring-color color])
-                         (.focus (.getElementById js/document "ringNr")))
+                         (if (= color "next")
+                           (do (rf/dispatch [:clear-name-input])
+                               (rf/dispatch [:inc-position])
+                               (rf/dispatch [:set-ring-color-input "-"])
+                               (.focus (.getElementById js/document "nameSelector")))
+                           (do
+                             (rf/dispatch [:add-ring-color {(keyword color) 0}])
+                             (rf/dispatch [:set-ring-color-input color])
+                             (.focus (.getElementById js/document "ringNr")))))
        :id             "ringColor"}]])
 
 (defn select-ring-nr
@@ -86,7 +92,7 @@
     {:mui-theme (get-mui-theme)}
 
     [ui/auto-complete
-      {:hint-text       "number"
+     {:hint-text        "nr."
        :full-width      true
        :search-text     @(rf/subscribe [:ring-number-input])
        :dataSource      []
@@ -107,18 +113,25 @@
 
 (defn add-rings
   []
-  [:div
-   (select-name)
-   (select-ring-color)
-   (select-ring-nr)
-   ])
+  [ui/mui-theme-provider
+   {:mui-theme (get-mui-theme)}
+
+   [ui/paper {:zdepth 3 :style {:width 250}}
+    [:div
+     [select-name]
+     [:div
+      [:div {:style {:width 200 :display "inline-block"}}
+       [select-ring-color]]
+      [:div {:style {:width 50 :display "inline-block"}}
+       [select-ring-nr]
+       ]]]]])
 
 (defn home-page
   []
   [:div
    [:h2 "Welcome to the bierapp"]
-   (add-rings)
-   (current-rings-for-user)])
+   [add-rings]
+   [current-rings-for-user]])
 
 (defn about-page
    []
