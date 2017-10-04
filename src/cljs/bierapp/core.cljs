@@ -1,7 +1,8 @@
 (ns bierapp.core
   (:require
     [cljsjs.material-ui]
-    [cljs-react-material-ui.core :as ui]
+    [cljs-react-material-ui.core :refer [get-mui-theme]]
+    [cljs-react-material-ui.reagent :as ui]
     [cljs-react-material-ui.icons :as ic]
 
     [reagent.core :as r]
@@ -19,54 +20,56 @@
 
 (defn navbar
   []
-  (ui/mui-theme-provider
-    {:mui-theme (ui/get-mui-theme)}
+  [ui/mui-theme-provider
+    {:mui-theme (get-mui-theme)}
 
-    (ui/app-bar
+    [ui/app-bar
       {:title                         "bierapp"
-       :on-left-icon-button-touch-tap #(rf/dispatch [:open-drawer])})))
+       :on-left-icon-button-touch-tap #(rf/dispatch [:open-drawer])}]])
 
 (defn drawer
   []
-  (ui/mui-theme-provider
+  [ui/mui-theme-provider
     {:mui-theme (ui/get-mui-theme)}
 
-    (ui/drawer
+    [ui/drawer
       {:docked            false
        :open              @(rf/subscribe [:drawer-status])
        :on-request-change #(rf/dispatch  [:close-drawer])}
 
-      (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :home])}
-                    "Home")
+      [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :home])}
+                    "Home"]
 
-      (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :about])}
-                    "About")
+      [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :about])}
+                    "About"]
 
-      (ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :user])}
-                    "Users"))))
+      [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :user])}
+                    "Users"]]])
 
 (defn select-name
   []
-  (ui/mui-theme-provider
-    {:mui-theme (ui/get-mui-theme)}
+  [ui/mui-theme-provider
+    {:mui-theme (get-mui-theme)}
 
-    (ui/auto-complete
+    [ui/auto-complete
       {:hint-text            "Name"
+       :full-width           true
        :dataSource           ["alb" "boa" "ceoa" "deva" "eva" "folia"]
        :filter               (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter")
        :disable-focus-ripple false
        :on-new-request       (fn [name _]
                                (rf/dispatch [:add-consumption-entry name])
                                (.focus (.getElementById js/document "ringColor")))
-       :id                   "nameSelector"})))
+       :id                   "nameSelector"}]])
 
 (defn select-ring-color
   []
-  (ui/mui-theme-provider
-    {:mui-theme (ui/get-mui-theme)}
+  [ui/mui-theme-provider
+    {:mui-theme (get-mui-theme)}
 
-    (ui/auto-complete
+    [ui/auto-complete
       {:hint-text      "Ring color"
+       :full-width     true
        :search-text    @(rf/subscribe [:ring-color-input])
        :dataSource     ["white" "gold" "brown" "pink"]
        :filter         (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter")
@@ -75,15 +78,16 @@
                          (rf/dispatch [:set-ring-color-input color])
                          (rf/dispatch [:set-current-ring-color color])
                          (.focus (.getElementById js/document "ringNr")))
-       :id             "ringColor"})))
+       :id             "ringColor"}]])
 
 (defn select-ring-nr
   []
-  (ui/mui-theme-provider
-    {:mui-theme (ui/get-mui-theme)}
+  [ui/mui-theme-provider
+    {:mui-theme (get-mui-theme)}
 
-    (ui/auto-complete
+    [ui/auto-complete
       {:hint-text       "number"
+       :full-width      true
        :search-text     @(rf/subscribe [:ring-number-input])
        :dataSource      []
        :id              "ringNr"
@@ -93,7 +97,7 @@
                           (rf/dispatch [:clear-ring-color-input])
                           (rf/dispatch [:clear-ring-nr-input])
                           (rf/dispatch [:add-ring-number nr])
-                          (.focus (.getElementById js/document "ringColor")))})))
+                          (.focus (.getElementById js/document "ringColor")))}]])
 
 (defn current-rings-for-user
   []
