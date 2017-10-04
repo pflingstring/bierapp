@@ -63,6 +63,21 @@
                                (.focus (.getElementById js/document "ringColor")))
        :id                   "nameSelector"}]])
 
+(def colors [:white :gold :brown :pink])
+(defn add-rings-to-table
+  []
+  (let [rings @(rf/subscribe [:current-rings])
+        keys (keys rings)]
+    (for [k keys]
+      (let [current-map   (get rings k)
+            current-rings (:rings current-map)]
+         [ui/table-row
+          [ui/table-row-column (:name current-map)]
+          (for [color colors]
+            (if (contains? current-rings color)
+              [ui/table-row-column (color current-rings)]
+              [ui/table-row-column 0]))]))))
+
 (defn select-ring-color
   []
   [ui/mui-theme-provider
@@ -79,6 +94,7 @@
                            (do (rf/dispatch [:clear-name-input])
                                (rf/dispatch [:inc-position])
                                (rf/dispatch [:set-ring-color-input "-"])
+                               (add-rings-to-table)
                                (.focus (.getElementById js/document "nameSelector")))
                            (do
                              (rf/dispatch [:add-ring-color {(keyword color) 0}])
@@ -108,28 +124,40 @@
 (defn current-rings-for-user
   []
   (let [rings @(rf/subscribe [:current-rings])]
-    [:div
-     [:p (str rings)]]))
+    [:div {:style {:width   800
+                   :padding 10}}
+     [ui/mui-theme-provider
+      {:mui-theme (get-mui-theme)}
+
+      [ui/paper
+       [ui/table
+        [ui/table-header
+         [ui/table-row
+          [ui/table-header-column "Name"]
+          [ui/table-header-column "White"]
+          [ui/table-header-column "Gold"]
+          [ui/table-header-column "Brown"]
+          [ui/table-header-column "Pink"]]]
+        [ui/table-body
+         (add-rings-to-table)]]]]]))
 
 (defn add-rings
   []
+  [:div {:style {:padding 10}}
   [ui/mui-theme-provider
    {:mui-theme (get-mui-theme)}
 
-   [ui/paper {:zdepth 3 :style {:width 250}}
-    [:div
+   [ui/paper {:style {:width 250}}
      [select-name]
      [:div
       [:div {:style {:width 200 :display "inline-block"}}
        [select-ring-color]]
       [:div {:style {:width 50 :display "inline-block"}}
-       [select-ring-nr]
-       ]]]]])
+       [select-ring-nr]]]]]])
 
 (defn home-page
   []
-  [:div
-   [:h2 "Welcome to the bierapp"]
+  [:div {:style {:backgroundColor "#E3F2FD"}}
    [add-rings]
    [current-rings-for-user]])
 

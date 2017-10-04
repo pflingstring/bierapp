@@ -123,7 +123,7 @@
 (reg-sub
   :current-rings
   (fn [db _]
-    (get-in db [:rings (:current-position db) :rings])))
+    (:rings db)))
 
 ;; ---------------------
 ;; General subscriptions
