@@ -3,180 +3,39 @@
     [cljsjs.material-ui]
     [cljs-react-material-ui.core :refer [get-mui-theme]]
     [cljs-react-material-ui.reagent :as ui]
-    [cljs-react-material-ui.icons :as ic]
-
-    [reagent.core :as r]
     [re-frame.core :as rf]
-
-    [bierapp.routes :refer [url-for hook-browser-navigation!]]
-    [ajax.core :refer [GET POST]]
-    [bierapp.ajax :refer [load-interceptors!]]
+    [reagent.core  :as r]
     [bierapp.events]
-
-    [goog.events :as events]
-    [goog.history.EventType :as HistoryEventType]
-    [reagent.core :as reagent])
-  (:import goog.History))
+    [bierapp.routes :refer [url-for hook-browser-navigation!]]
+    [bierapp.ajax   :refer [load-interceptors!]]
+    [bierapp.rings.views :refer [add-rings-view]]))
 
 (defn navbar
   []
-  [ui/mui-theme-provider
-    {:mui-theme (get-mui-theme)}
-
+  [ui/mui-theme-provider {:mui-theme (get-mui-theme)}
     [ui/app-bar
       {:title                         "bierapp"
        :on-left-icon-button-touch-tap #(rf/dispatch [:open-drawer])}]])
 
 (defn drawer
   []
-  [ui/mui-theme-provider
-   {:mui-theme (get-mui-theme)}
-
+  [ui/mui-theme-provider {:mui-theme (get-mui-theme)}
     [ui/drawer
       {:docked            false
        :open              @(rf/subscribe [:drawer-status])
        :on-request-change #(rf/dispatch  [:close-drawer])}
 
       [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :home])}
-                    "Home"]
-
-      [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :about])}
-                    "About"]
-
-      [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :user])}
-                    "Users"]]])
-
-(defn select-name
-  []
-  [ui/mui-theme-provider
-    {:mui-theme (get-mui-theme)}
-
-    [ui/auto-complete
-      {:hint-text            "Name"
-       :search-text          @(rf/subscribe [:name-input])
-       :full-width           true
-       :dataSource           ["alb" "boa" "ceoa" "deva" "eva" "folia"]
-       :filter               (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter")
-       :on-new-request       (fn [name _]
-                               (rf/dispatch [:add-consumption-entry name])
-                               (rf/dispatch [:clear-ring-color-input])
-                               (.focus (.getElementById js/document "ringColor")))
-       :id                   "nameSelector"}]])
-
-(def colors [:white :gold :brown :pink])
-(defn add-rings-to-table
-  []
-  (let [rings @(rf/subscribe [:current-rings])
-        keys (keys rings)]
-    (for [k keys]
-      (let [current-map   (get rings k)
-            current-rings (:rings current-map)]
-         [ui/table-row
-          [ui/table-row-column (:name current-map)]
-          (for [color colors]
-            (if (contains? current-rings color)
-              [ui/table-row-column (color current-rings)]
-              [ui/table-row-column 0]))]))))
-
-(defn select-ring-color
-  []
-  [ui/mui-theme-provider
-    {:mui-theme (get-mui-theme)}
-
-    [ui/auto-complete
-      {:hint-text      "Ring color"
-       :full-width     true
-       :search-text    @(rf/subscribe [:ring-color-input])
-       :dataSource     ["white" "gold" "brown" "pink"]
-       :filter         (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter")
-       :on-new-request (fn [color _]
-                         (if (= color "next")
-                           (do (rf/dispatch [:clear-name-input])
-                               (rf/dispatch [:inc-position])
-                               (rf/dispatch [:set-ring-color-input "-"])
-                               (add-rings-to-table)
-                               (.focus (.getElementById js/document "nameSelector")))
-                           (do
-                             (rf/dispatch [:add-ring-color {(keyword color) 0}])
-                             (rf/dispatch [:set-ring-color-input color])
-                             (.focus (.getElementById js/document "ringNr")))))
-       :id             "ringColor"}]])
-
-(defn select-ring-nr
-  []
-  [ui/mui-theme-provider
-    {:mui-theme (get-mui-theme)}
-
-    [ui/auto-complete
-     {:hint-text        "nr."
-       :full-width      true
-       :search-text     @(rf/subscribe [:ring-number-input])
-       :dataSource      []
-       :id              "ringNr"
-       :on-update-input (fn [str _ _]
-                          (rf/dispatch [:set-ring-nr-input str]))
-       :on-new-request  (fn [nr _]
-                          (rf/dispatch [:clear-ring-color-input])
-                          (rf/dispatch [:clear-ring-nr-input])
-                          (rf/dispatch [:add-ring-number nr])
-                          (.focus (.getElementById js/document "ringColor")))}]])
-
-(defn current-rings-for-user
-  []
-  (let [rings @(rf/subscribe [:current-rings])]
-    [:div {:style {:width   800
-                   :padding 10}}
-     [ui/mui-theme-provider
-      {:mui-theme (get-mui-theme)}
-
-      [ui/paper
-       [ui/table
-        [ui/table-header
-         [ui/table-row
-          [ui/table-header-column "Name"]
-          [ui/table-header-column "White"]
-          [ui/table-header-column "Gold"]
-          [ui/table-header-column "Brown"]
-          [ui/table-header-column "Pink"]]]
-        [ui/table-body
-         (add-rings-to-table)]]]]]))
-
-(defn add-rings
-  []
-  [:div {:style {:padding 10}}
-  [ui/mui-theme-provider
-   {:mui-theme (get-mui-theme)}
-
-   [ui/paper {:style {:width 250}}
-     [select-name]
-     [:div
-      [:div {:style {:width 200 :display "inline-block"}}
-       [select-ring-color]]
-      [:div {:style {:width 50 :display "inline-block"}}
-       [select-ring-nr]]]]]])
+                    "Home"]]])
 
 (defn home-page
   []
   [:div {:style {:backgroundColor "#E3F2FD"}}
-   [add-rings]
-   [current-rings-for-user]])
-
-(defn about-page
-   []
-   [:div
-    [:p "About Page"]
-    [:a {:href (url-for :home)} "Go to Home page"]])
-
-(defn user-page
-  []
-  [:div
-   [:p "Users"]
-   [:a {:href (url-for :home)} "Go to Home page"]])
+   [add-rings-view]])
 
 (def pages
   {:home  #'home-page
-   :about #'about-page
-   :user  #'user-page})
+  })
 
 (defn complete-page []
   [:div
