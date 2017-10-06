@@ -74,11 +74,6 @@
     (assoc db :current-name-input name)))
 
 (reg-event-db
-  :inc-position
-  (fn [db [_ name]]
-    (update db :current-position inc)))
-
-(reg-event-db
   :set-current-user-id
   (fn [db [_ name]]
     (let [user-id ((:name-input-src db) name)]
@@ -92,8 +87,7 @@
                   :format          (ajax/json-request-format)
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success      [:process-response]
-                  :on-failure      [:bad-response]}
-     :db  (assoc db :loading? true)}))
+                  :on-failure      [:bad-response]}}))
 
 (reg-event-db
   :process-response

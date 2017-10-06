@@ -53,9 +53,7 @@
      :on-new-request (fn [color _]
                        (if (= color "next")
                          (do (rf/dispatch [:clear-name-input])
-                             (rf/dispatch [:inc-position])
                              (rf/dispatch [:set-ring-color-input "-"])
-                             ;(create-table-rows)
                              (.focus (.getElementById js/document "nameSelector")))
                          (do
                            (rf/dispatch [:add-ring-color {(keyword color) 0}])
