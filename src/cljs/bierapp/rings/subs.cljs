@@ -34,3 +34,10 @@
   :current-position
   (fn [db _]
     (:current-position db)))
+
+(reg-sub
+  :all-users
+  (fn [db _]
+    (if (= (:name-input-src db) {})
+      []
+      (keys (:name-input-src db)))))

@@ -33,8 +33,9 @@
      :full-width     true
      :filter         search-filter
      :search-text    @(rf/subscribe [:name-input])
-     :dataSource     ["alb" "boa" "ceoa" "deva" "eva" "folia"]
+     :dataSource     @(rf/subscribe [:all-users])
      :on-new-request (fn [name _]
+                       (rf/dispatch [:set-current-user-id name])
                        (rf/dispatch [:add-consumption-entry name])
                        (rf/dispatch [:clear-ring-color-input])
                        (.focus (.getElementById js/document "ringColor")))}]])

@@ -14,6 +14,10 @@
                     :pass       pass
                     :balance    balance}))
 
+(defn get-all-users
+  []
+  (db/get-all-users))
+
 (defn get-balance
   [id]
   (-> (db/get-user-balance {:id id})

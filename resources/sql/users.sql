@@ -25,6 +25,10 @@ WHERE id = :id;
 DELETE FROM users
 WHERE id = :id;
 
+-- :name get-all-users :? :*
+SELECT id, first_name, last_name
+FROM users;
+
 
 ------------------------
 ---   USER BALANCE   ---

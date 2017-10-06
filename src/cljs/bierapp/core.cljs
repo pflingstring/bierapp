@@ -52,6 +52,7 @@
 
 (defn init! []
   (rf/dispatch-sync [:initialize-db])
+  (rf/dispatch-sync [:get-users])
   (load-interceptors!)
   (hook-browser-navigation!)
   (mount-components))
