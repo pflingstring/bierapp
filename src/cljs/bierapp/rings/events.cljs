@@ -59,6 +59,16 @@
   (fn [db _]
     (assoc db :current-name-input "")))
 
+(reg-event-db
+  :disable-upload-rings-button
+  (fn [db _]
+    (assoc db :upload-rings-button-disabled? true)))
+
+(reg-event-db
+  :enable-upload-rings-button
+  (fn [db _]
+    (assoc db :upload-rings-button-disabled? false)))
+
 ;; -------------------
 ;; app-db manipulation
 ;; -------------------
@@ -86,15 +96,45 @@
                   :uri             "/get"
                   :format          (ajax/json-request-format)
                   :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success      [:process-response]
-                  :on-failure      [:bad-response]}}))
+                  :on-success      [:set-name-input-source]
+                  :on-failure      [:get-users-error]}}))
 
 (reg-event-db
-  :process-response
+  :set-name-input-source
   (fn [db [_ result]]
     (assoc db :name-input-src (clojure.set/map-invert result))))
 
 (reg-event-db
-  :bad-response
+  :get-users-error
   (fn [db [_ result]]
     (assoc db :name-input-src {:error "big error"})))
+
+(reg-event-fx
+  :upload-rings
+  (fn [{db :db} _]
+    {:http-xhrio {:method          :post
+                  :uri             "/rings/upload"
+                  :params          (:rings db)
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:clear-current-rings]
+                  :on-failure      [:upload-rings-error]}}))
+
+(reg-event-db
+  :clear-current-rings
+  (fn [db _]
+    (dispatch [:enable-upload-rings-button])
+    (dispatch [:clear-upload-error])
+    (assoc db :rings {})))
+
+(reg-event-db
+  :clear-upload-error
+  (fn [db _]
+    (assoc db :upload-rings-error " ")))
+
+(reg-event-db
+  :upload-rings-error
+  (fn [db [_ error]]
+    ;(dispatch [:enable-upload-rings-button])
+    (assoc db :upload-rings-error (str "Error uploading rings\n"
+                                       (subs 0 300 error)))))

@@ -41,3 +41,13 @@
     (if (= (:name-input-src db) {})
       []
       (keys (:name-input-src db)))))
+
+(reg-sub
+  :upload-rings-button-status
+  (fn [db _]
+    (:upload-rings-button-disabled? db)))
+
+(reg-sub
+  :upload-rings-error
+  (fn [db _]
+    (:upload-rings-error db)))

@@ -3,6 +3,7 @@
     [cljsjs.material-ui]
     [cljs-react-material-ui.reagent :as ui]
     [cljs-react-material-ui.core :refer [get-mui-theme]]
+    [cljs.reader :refer [read-string]]
     [re-frame.core :as rf]
     [bierapp.rings.events]
     [bierapp.rings.subs]))
@@ -74,10 +75,10 @@
      :on-new-request  (fn [nr _]
                         (rf/dispatch [:clear-ring-color-input])
                         (rf/dispatch [:clear-ring-nr-input])
-                        (rf/dispatch [:add-ring-number nr])
+                        (rf/dispatch [:add-ring-number (read-string nr)])
                         (.focus (.getElementById js/document "ringColor")))}]])
 
-(defn- add-rings-input
+(defn- add-rings-panel
   []
   [:div {:style {:padding 10}}
    [ui/mui-theme-provider
@@ -93,7 +94,7 @@
 
 ;; TODO: add unique key for each row
 ;; see https://reactjs.org/docs/lists-and-keys.html#keys
-(defn- rings-table
+(defn- rings-table-panel
   []
   (let [rings @(rf/subscribe [:current-rings])]
     [:div {:style {:width   800
@@ -111,9 +112,24 @@
         [ui/table-body
          (create-table-rows)]]]]]))
 
+(defn upload-button
+  []
+  [ui/mui-theme-provider {:mui-theme (get-mui-theme)}
+   [ui/raised-button {:style    {:margin 10}
+                      :label    "Upload"
+                      :disabled @(rf/subscribe [:upload-rings-button-status])
+                      :on-click #(do (rf/dispatch [:disable-upload-rings-button])
+                                     (rf/dispatch [:clear-name-input])
+                                     (rf/dispatch [:upload-rings]))}]])
+
+(defn error-status
+  []
+  [:p @(rf/subscribe [:upload-rings-error])])
+
 (defn add-rings-view
   []
   [:div
-   [add-rings-input]
-   [rings-table]])
-
+   [add-rings-panel]
+   [rings-table-panel]
+   [upload-button]
+   [error-status]])

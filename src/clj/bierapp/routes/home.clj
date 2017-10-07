@@ -1,7 +1,8 @@
 (ns bierapp.routes.home
   (:require [bierapp.layout :as layout]
             [bierapp.handlers.user :as u]
-            [compojure.core :refer [defroutes GET]]
+            [bierapp.handlers.consumption :as c]
+            [compojure.core :refer [defroutes GET POST]]
             [ring.util.http-response :as response]
             [clojure.java.io :as io]
             [bierapp.db.core :as db]
@@ -28,6 +29,7 @@
     (home-page))
 
   (GET "/get" [] (create-response response/ok (u/get-user-ids)))
+  (POST "/rings/upload" req (create-response response/ok (c/create-bulk-consumption (:params req))))
 
   (GET "/docs" []
     (-> (response/ok (-> "docs/docs.md" io/resource slurp))
