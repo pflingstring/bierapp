@@ -1,7 +1,7 @@
 (ns bierapp.core
   (:require
     [cljsjs.material-ui]
-    [cljs-react-material-ui.core :refer [get-mui-theme]]
+    [cljs-react-material-ui.core :refer [get-mui-theme color]]
     [cljs-react-material-ui.reagent :as ui]
     [re-frame.core :as rf]
     [reagent.core  :as r]
@@ -14,9 +14,9 @@
 (defn navbar
   []
   [ui/mui-theme-provider {:mui-theme (get-mui-theme)}
-    [ui/app-bar
-      {:title                         "bierapp"
-       :on-left-icon-button-touch-tap #(rf/dispatch [:open-drawer])}]])
+   [ui/app-bar
+    {:title                         "bierapp"
+     :on-left-icon-button-touch-tap #(rf/dispatch [:open-drawer])}]])
 
 (defn drawer
   []
@@ -26,9 +26,11 @@
        :open              @(rf/subscribe [:drawer-status])
        :on-request-change #(rf/dispatch  [:close-drawer])}
 
-      [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :home])}
+     [ui/list-item {:hover-color (color :blue100)
+                    :on-click    #(rf/dispatch [:drawer-navigate :home])}
                     "Home"]
-      [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :money])}
+     [ui/list-item {:hover-color (color :blue100)
+                    :on-click    #(rf/dispatch [:drawer-navigate :money])}
                     "Money"]]])
 
 (defn home-page
