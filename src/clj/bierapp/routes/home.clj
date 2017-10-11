@@ -30,6 +30,7 @@
 
   (GET "/get" [] (create-response response/ok (u/get-user-ids)))
   (POST "/rings/upload" req (create-response response/ok (c/create-bulk-consumption (:params req))))
+  (POST "/money/add"    req (create-response response/ok (u/deposit-money (:params req))))
 
   (GET "/docs" []
     (-> (response/ok (-> "docs/docs.md" io/resource slurp))

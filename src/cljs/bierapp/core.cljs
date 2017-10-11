@@ -8,7 +8,8 @@
     [bierapp.events]
     [bierapp.routes :refer [url-for hook-browser-navigation!]]
     [bierapp.ajax   :refer [load-interceptors!]]
-    [bierapp.rings.views :refer [add-rings-view]]))
+    [bierapp.rings.views :refer [add-rings-view]]
+    [bierapp.money.views :refer [add-money-view]]))
 
 (defn navbar
   []
@@ -26,22 +27,31 @@
        :on-request-change #(rf/dispatch  [:close-drawer])}
 
       [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :home])}
-                    "Home"]]])
+                    "Home"]
+      [ui/menu-item {:on-click #(rf/dispatch [:drawer-navigate :money])}
+                    "Money"]]])
 
 (defn home-page
   []
-  [:div {:style {:backgroundColor "#E3F2FD"}}
+  [:div
    [add-rings-view]])
+
+(defn money-page
+  []
+  [:div {:style {:padding 10}}
+   [add-money-view]])
 
 (def pages
   {:home  #'home-page
+   :money #'money-page
   })
 
 (defn complete-page []
   [:div
    [drawer]
    [navbar]
-   [(pages @(rf/subscribe [:page]))]])
+   [:div {:style {:backgroundColor "#E3F2FD"}}
+    [(pages @(rf/subscribe [:page]))]]])
 
 ;; -------------------------
 ;; Initialize app

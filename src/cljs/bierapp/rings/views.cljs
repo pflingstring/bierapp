@@ -84,7 +84,9 @@
    [ui/mui-theme-provider
     {:mui-theme (get-mui-theme)}
 
-    [ui/paper {:style {:width 250}}
+    [ui/paper {:style {:width         260
+                       :padding-left  5
+                       :padding-right 5}}
      [select-name]
      [:div
       [:div {:style {:width 200 :display "inline-block"}}
@@ -97,8 +99,8 @@
 (defn- rings-table-panel
   []
   (let [rings @(rf/subscribe [:current-rings])]
-    [:div {:style {:width   800
-                   :padding 10}}
+    [:div {:style {:width        800
+                   :padding-left 10}}
      [ui/mui-theme-provider {:mui-theme (get-mui-theme)}
       [ui/paper
        [ui/table
@@ -117,8 +119,11 @@
   [ui/mui-theme-provider {:mui-theme (get-mui-theme)}
    [ui/raised-button {:style    {:margin 10}
                       :label    "Upload"
+                      :primary  true
                       :disabled @(rf/subscribe [:upload-rings-button-status])
-                      :on-click #(do (rf/dispatch [:disable-upload-rings-button])
+                      :on-click #(do (.preventDefault %) ;; needed to prevent a bug
+                                                         ;; see https://github.com/callemall/material-ui/issues/8413
+                                     (rf/dispatch [:disable-upload-rings-button])
                                      (rf/dispatch [:clear-name-input])
                                      (rf/dispatch [:upload-rings]))}]])
 

@@ -36,7 +36,7 @@
   (fn [db [_ page]]
     (routes/accountant-navigate! page)
     (dispatch [:close-drawer])
-    (dispatch [:set-active-page page])))
+    (assoc db :page page)))
 
 
 ;; ---------------------
