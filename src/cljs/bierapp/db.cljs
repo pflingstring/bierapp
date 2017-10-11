@@ -3,6 +3,7 @@
 (def default-db
   {:page                          :home
    :rings                         {}
+   :users-balance                 {}
    :current-user-id               -1
    :current-name-input            ""
    :current-ring-color            ""

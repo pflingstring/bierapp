@@ -45,3 +45,7 @@ WHERE id = :id;
 SELECT balance
 FROM users
 WHERE id = :id;
+
+-- :name get-balances :? :*
+SELECT id, first_name, last_name, balance
+FROM users;

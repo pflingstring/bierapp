@@ -6,7 +6,8 @@
 (def app-routes
   ["/" {""      :home
         "money" :money
-        "user"  :user}])
+        "users/" {"" :users
+                 [:id] :user-id}}])
 
 (def url-for (partial bidi/path-for app-routes))
 

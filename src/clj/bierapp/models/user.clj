@@ -18,6 +18,10 @@
   []
   (db/get-all-users))
 
+(defn get-users-balance
+  []
+  (db/get-balances))
+
 (defn get-balance
   [id]
   (-> (db/get-user-balance {:id id})

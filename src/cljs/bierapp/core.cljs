@@ -8,6 +8,7 @@
     [bierapp.events]
     [bierapp.routes :refer [url-for hook-browser-navigation!]]
     [bierapp.ajax   :refer [load-interceptors!]]
+    [bierapp.users.views :refer [user-table]]
     [bierapp.rings.views :refer [add-rings-view]]
     [bierapp.money.views :refer [add-money-view]]))
 
@@ -30,6 +31,10 @@
                     :on-click    #(rf/dispatch [:drawer-navigate :home])}
                     "Home"]
      [ui/list-item {:hover-color (color :blue100)
+                    :on-click    #(rf/dispatch [:drawer-navigate :users])}
+                    "Users"]
+
+     [ui/list-item {:hover-color (color :blue100)
                     :on-click    #(rf/dispatch [:drawer-navigate :money])}
                     "Money"]]])
 
@@ -43,9 +48,15 @@
   [:div {:style {:padding 10}}
    [add-money-view]])
 
+(defn users-page
+  []
+  [:div {:style {:padding 10}}
+   [user-table]])
+
 (def pages
   {:home  #'home-page
    :money #'money-page
+   :users #'users-page
   })
 
 (defn complete-page []
@@ -65,6 +76,7 @@
 (defn init! []
   (rf/dispatch-sync [:initialize-db])
   (rf/dispatch-sync [:get-users])
+  (rf/dispatch [:get-users-balance])
   (load-interceptors!)
   (hook-browser-navigation!)
   (mount-components))
