@@ -12,6 +12,10 @@
   [id]
   (db/get-transaction {:id id}))
 
+(defn get-user-transactions
+  [id]
+  (db/get-user-transactions {:from_id id}))
+
 (defn update-amount
   [id amount]
   (db/update-transaction-amount! {:id id

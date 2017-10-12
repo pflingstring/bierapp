@@ -2,6 +2,7 @@
   (:require [bierapp.layout :as layout]
             [bierapp.handlers.user :as u]
             [bierapp.handlers.consumption :as c]
+            [bierapp.handlers.transaction :as t]
             [compojure.core :refer [defroutes GET POST]]
             [ring.util.http-response :as response]
             [clojure.java.io :as io]
@@ -30,6 +31,7 @@
 
   (GET "/get" [] (create-response response/ok (u/get-user-ids)))
   (GET "/users/balance" [] (create-response response/ok (u/get-users-balance)))
+  (GET "/users/:id/transactions" req (create-response response/ok (t/get-user-transactions (get-in req [:params :id]))))
   (POST "/rings/upload" req (create-response response/ok (c/create-bulk-consumption (:params req))))
   (POST "/money/add"    req (create-response response/ok (u/deposit-money (:params req))))
 

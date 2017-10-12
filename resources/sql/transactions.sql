@@ -24,4 +24,10 @@ WHERE id = :id;
 -- :name update-transaction-amount! :! :n
 UPDATE transactions
 SET amount = :amount
-WHERE id = :id
+WHERE id = :id;
+
+-- :name get-user-transactions :? :*
+SELECT t.id, c.rings, t.amount, b.old_amount, b.new_amount
+FROM (transactions t INNER JOIN balance_log b ON t.id=b.transaction_id)
+  LEFT JOIN consumptions c ON t.id=c.transaction_id
+WHERE t.from_id= :from_id;

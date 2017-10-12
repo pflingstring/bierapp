@@ -4,6 +4,7 @@
   {:page                          {:curr :home :args []}
    :rings                         {}
    :users-balance                 {}
+   :transactions                  {}
    :current-user-id               -1
    :current-name-input            ""
    :current-ring-color            ""

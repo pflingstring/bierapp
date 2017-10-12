@@ -8,7 +8,7 @@
     [bierapp.events]
     [bierapp.routes :refer [url-for hook-browser-navigation!]]
     [bierapp.ajax   :refer [load-interceptors!]]
-    [bierapp.users.views :refer [user-table]]
+    [bierapp.users.views :refer [user-balance-table user-transactions-table]]
     [bierapp.rings.views :refer [add-rings-view]]
     [bierapp.money.views :refer [add-money-view]]))
 
@@ -50,12 +50,14 @@
 (defn users-page
   []
   [:div {:style {:padding 10}}
-   [user-table]])
+   [user-balance-table]])
 
 (defn user-id
   []
   (let [id (second @(rf/subscribe [:path-args]))]
-    [:p "Hello " id]))
+    [:div {:style {:padding 10}}
+     [:h2 (str @(rf/subscribe [:user-name id]) "\t" @(rf/subscribe [:user-balance-by-id id]))]
+     [user-transactions-table]]))
 
 (def pages
   {:home    #'home-page
