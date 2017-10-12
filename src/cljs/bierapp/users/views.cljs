@@ -17,7 +17,8 @@
        [ui/table-row (when (< (:balance user) 0)
                        {:style {:backgroundColor (color :deepOrange50)}})
 
-        [ui/table-row-column [:a {:on-click #(accountant/navigate! (url-for :user-id :id id))}
+        [ui/table-row-column [:a {:on-click #(do (rf/dispatch [:set-path-args [:id id]])
+                                                 (rf/dispatch [:navigate-to :user-id]))}
           (:name user)]]
         [ui/table-row-column {:style {:text-align "right"}}
           (:balance user)]]))])

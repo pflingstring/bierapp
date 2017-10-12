@@ -1,13 +1,13 @@
 (ns bierapp.db)
 
 (def default-db
-  {:page                          :home
+  {:page                          {:curr :home :args []}
    :rings                         {}
    :users-balance                 {}
    :current-user-id               -1
    :current-name-input            ""
    :current-ring-color            ""
-   :current-money-amount          0
+   :current-money-amount          ""
    :ring-color-input              ""
    :ring-number-input             ""
    :name-input-src                {}

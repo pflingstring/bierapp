@@ -33,7 +33,6 @@
      [ui/list-item {:hover-color (color :blue100)
                     :on-click    #(rf/dispatch [:drawer-navigate :users])}
                     "Users"]
-
      [ui/list-item {:hover-color (color :blue100)
                     :on-click    #(rf/dispatch [:drawer-navigate :money])}
                     "Money"]]])
@@ -53,10 +52,16 @@
   [:div {:style {:padding 10}}
    [user-table]])
 
+(defn user-id
+  []
+  (let [id (second @(rf/subscribe [:path-args]))]
+    [:p "Hello " id]))
+
 (def pages
-  {:home  #'home-page
-   :money #'money-page
-   :users #'users-page
+  {:home    #'home-page
+   :money   #'money-page
+   :users   #'users-page
+   :user-id #'user-id
   })
 
 (defn complete-page []

@@ -23,5 +23,10 @@
   (accountant/dispatch-current!))
 
 (defn accountant-navigate!
-  [page]
-  (accountant/navigate! (url-for page)))
+  [path]
+  (let [args @(rf/subscribe [:path-args])]
+    (if (empty? args)
+      (accountant/navigate! (url-for path))
+      (cond
+        (= path :user-id) (accountant/navigate! (url-for path (first  args) (second args)))
+      ))))

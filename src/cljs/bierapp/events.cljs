@@ -15,7 +15,7 @@
 (reg-event-db
   :set-active-page
   (fn [db [_ page]]
-    (assoc db :page page)))
+    (assoc-in db [:page :curr] page)))
 
 ;; --------------
 ;; Drawer events
@@ -32,11 +32,28 @@
     (assoc db :drawer-opened? false)))
 
 (reg-event-db
+  :set-path-args
+  (fn [db [_ args]]
+    (assoc-in db [:page :args] args)))
+
+(reg-event-db
+  :clear-page-args
+  (fn [db _]
+    (assoc-in db [:page :args] [])))
+
+(reg-event-db
   :drawer-navigate
   (fn [db [_ page]]
     (routes/accountant-navigate! page)
     (dispatch [:close-drawer])
-    (assoc db :page page)))
+    (dispatch [:clear-page-args])
+    (assoc-in db [:page :curr] page)))
+
+(reg-event-db
+  :navigate-to
+  (fn [db [_ page]]
+    (routes/accountant-navigate! page)
+    (assoc-in db [:page :curr] page)))
 
 
 ;; ---------------------
@@ -46,10 +63,14 @@
 (reg-sub
   :page
   (fn [db _]
-    (:page db)))
+    (:curr (:page db))))
 
 (reg-sub
   :drawer-status
   (fn [db _]
     (:drawer-opened? db)))
 
+(reg-sub
+  :path-args
+  (fn [db _]
+    (get-in db [:page :args])))
