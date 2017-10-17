@@ -1,5 +1,6 @@
 (ns bierapp.routes.home
   (:require [bierapp.layout :as layout]
+            [bierapp.models.cash :as cash]
             [bierapp.handlers.user :as u]
             [bierapp.handlers.consumption :as c]
             [bierapp.handlers.transaction :as t]
@@ -30,6 +31,7 @@
     (home-page))
 
   (GET "/get" [] (create-response response/ok (u/get-user-ids)))
+  (GET "/get/kasse/log" [] (create-response response/ok (cash/get-kasse-log)))
   (GET "/users/balance" [] (create-response response/ok (u/get-users-balance)))
   (GET "/users/:id/transactions" req (create-response response/ok (t/get-user-transactions (get-in req [:params :id]))))
   (POST "/rings/upload" req (create-response response/ok (c/create-bulk-consumption (:params req))))

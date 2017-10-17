@@ -50,3 +50,34 @@
                   (rf/dispatch [:disable-upload-money-button])
                   (rf/dispatch [:clear-name-input])
                   (rf/dispatch [:clear-amount-input]))}]]])
+
+
+(defn- create-table-rows
+  []
+  (let [logs (into (sorted-map) @(rf/subscribe [:kasse-log]))
+        keys (keys logs)]
+    (println logs)
+    (for [k keys]
+      (let [current-map (get logs k)]
+        [ui/table-row
+         [ui/table-row-column (subs (:date current-map) 0 10)]
+         [ui/table-row-column (:info current-map)]
+         [ui/table-row-column (:amount current-map)]
+         [ui/table-row-column (:old_amount current-map)]
+         [ui/table-row-column (:new-amount current-map)]]))))
+
+(defn kasse-panel
+  []
+  [ui/mui-theme-provider {:mui-theme (get-mui-theme)}
+   [ui/paper
+    [ui/table
+     [ui/table-header
+      [ui/table-row
+       [ui/table-header-column "Datum"]
+       [ui/table-header-column "Info"]
+       [ui/table-header-column "Amount"]
+       [ui/table-header-column "Old Amount"]
+       [ui/table-header-column "New Amount"]]]
+     [ui/table-body
+      (create-table-rows)
+      ]]]])

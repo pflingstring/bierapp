@@ -10,7 +10,7 @@
     [bierapp.ajax   :refer [load-interceptors!]]
     [bierapp.users.views :refer [user-balance-table user-transactions-table]]
     [bierapp.rings.views :refer [add-rings-view]]
-    [bierapp.money.views :refer [add-money-view]]))
+    [bierapp.money.views :refer [add-money-view kasse-panel]]))
 
 (defn navbar
   []
@@ -31,11 +31,18 @@
                     :on-click    #(rf/dispatch [:drawer-navigate :home])}
                     "Home"]
      [ui/list-item {:hover-color (color :blue100)
-                    :on-click    #(rf/dispatch [:drawer-navigate :users])}
+                    :on-click    (fn []
+                                   (do (rf/dispatch [:get-users-balance])
+                                       (rf/dispatch [:drawer-navigate :users])))}
                     "Users"]
      [ui/list-item {:hover-color (color :blue100)
                     :on-click    #(rf/dispatch [:drawer-navigate :money])}
-                    "Money"]]])
+      "Money"]
+     [ui/list-item {:hover-color (color :blue100)
+                    :on-click    (fn []
+                                   (do (rf/dispatch [:drawer-navigate :kasse])
+                                       (rf/dispatch [:get-kasse-log])))}
+      "Kasse"]]])
 
 (defn home-page
   []
@@ -52,6 +59,11 @@
   [:div {:style {:padding 10}}
    [user-balance-table]])
 
+(defn kasse-page
+  []
+  [:div {:style {:padding 10}}
+   [kasse-panel]])
+
 (defn user-id
   []
   (let [id (second @(rf/subscribe [:path-args]))]
@@ -64,6 +76,7 @@
    :money   #'money-page
    :users   #'users-page
    :user-id #'user-id
+   :kasse   #'kasse-page
   })
 
 (defn complete-page []
@@ -83,7 +96,6 @@
 (defn init! []
   (rf/dispatch-sync [:initialize-db])
   (rf/dispatch-sync [:get-users])
-  (rf/dispatch [:get-users-balance])
   (load-interceptors!)
   (hook-browser-navigation!)
   (mount-components))

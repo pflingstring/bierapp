@@ -29,6 +29,11 @@ WHERE id = :id;
 SELECT id, first_name, last_name
 FROM users;
 
+-- :name get-user-name-by-id
+SELECT first_name, last_name
+FROM users
+WHERE id = :id;
+
 
 ------------------------
 ---   USER BALANCE   ---

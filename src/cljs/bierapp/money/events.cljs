@@ -44,3 +44,19 @@
   :on-money-upload-failure
   (fn [db _]
     (assoc db :upload-money-button-disabled? false)))
+
+
+(reg-event-fx
+  :get-kasse-log
+  (fn [{db :db} _]
+    {:http-xhrio {:method          :get
+                  :uri             "/get/kasse/log"
+                  :format          (ajax/json-request-format)
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:set-kasse-log]
+                  :on-failure      [:on-money-upload-failure]}}))
+
+(reg-event-db
+  :set-kasse-log
+  (fn [db [_ log]]
+    (assoc db :kasse-log log)))

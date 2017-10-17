@@ -27,3 +27,22 @@
         transaction (-> (t/create 1 (- amount) date) (:id))]
     (log/create-entry! 1 transaction old-amount new-amount)
     (update-balance! new-amount)))
+
+(defn get-kasse-log []
+  (let [query (db/get-kasse-log)
+        to-map (fn [e]
+                 {(:id e)
+                  {:date (:date e)
+                   :info (str "Einzahlung "
+                              (-> (db/get-user-name-by-id {:id (:from_id e)})
+                                  first
+                                  (:first_name))
+                              " "
+                              (-> (db/get-user-name-by-id {:id (:from_id e)})
+                                  first
+                                  (:last_name)))
+                   :amount (:amount e)
+                   :old_amount (:old_amount e)
+                   :new-amount (:new_amount e)}})
+        result (map to-map query)]
+    (into {} result)))

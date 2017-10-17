@@ -14,3 +14,9 @@ WHERE id = :id;
 SELECT id, old_amount
 FROM balance_log
 WHERE transaction_id = :transaction_id;
+
+
+-- :name get-kasse-log :? :*
+SELECT t.id, t.date, t.from_id, t.info, t.amount, b.old_amount, b.new_amount
+FROM transactions t INNER JOIN balance_log b on t.id = b.transaction_id
+WHERE b.user_id = 1

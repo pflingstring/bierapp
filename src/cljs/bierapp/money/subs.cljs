@@ -10,3 +10,8 @@
   :upload-money-button-status
   (fn [db _]
     (:upload-money-button-disabled? db)))
+
+(reg-sub
+  :kasse-log
+  (fn [db _]
+    (:kasse-log db)))

@@ -6,6 +6,7 @@
 (def app-routes
   ["/" {""      :home
         "money" :money
+        "kasse" :kasse
         "users/" {"" :users
                  [:id] :user-id}}])
 
