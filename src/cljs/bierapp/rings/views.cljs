@@ -8,7 +8,7 @@
     [bierapp.rings.events]
     [bierapp.rings.subs]))
 
-(def colors [:white :gold :brown :pink])
+(def colors [:weiss :gold :lila :rosa])
 (def search-filter (aget js/MaterialUI "AutoComplete" "caseInsensitiveFilter"))
 
 (defn- create-table-rows
@@ -50,7 +50,7 @@
      :full-width     true
      :filter         search-filter
      :search-text    @(rf/subscribe [:ring-color-input])
-     :dataSource     ["white" "gold" "brown" "pink"]
+     :dataSource     ["weiss" "gold" "lila" "rosa"]
      :on-new-request (fn [color _]
                        (if (= color "next")
                          (do (rf/dispatch [:clear-name-input])
@@ -107,10 +107,10 @@
         [ui/table-header
          [ui/table-row
           [ui/table-header-column "Name"]
-          [ui/table-header-column "White"]
+          [ui/table-header-column "Weiss"]
           [ui/table-header-column "Gold"]
-          [ui/table-header-column "Brown"]
-          [ui/table-header-column "Pink"]]]
+          [ui/table-header-column "Lila"]
+          [ui/table-header-column "Rosa"]]]
         [ui/table-body
          (create-table-rows)]]]]]))
 
@@ -123,7 +123,7 @@
                       :disabled @(rf/subscribe [:upload-rings-button-status])
                       :on-click #(do (.preventDefault %) ;; needed to prevent a bug
                                                          ;; see https://github.com/callemall/material-ui/issues/8413
-                                     (rf/dispatch [:disable-upload-rings-button])
+                                     ;(rf/dispatch [:disable-upload-rings-button])
                                      (rf/dispatch [:clear-name-input])
                                      (rf/dispatch [:upload-rings]))}]])
 
