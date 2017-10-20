@@ -1,7 +1,7 @@
 (ns bierapp.events
   (:require [bierapp.db :as db]
             [bierapp.routes :as routes]
-            [re-frame.core :refer [dispatch reg-event-db reg-sub]]))
+            [re-frame.core :refer [dispatch reg-event-db reg-event-fx reg-sub reg-fx]]))
 
 ;; --------------------------
 ;; Init und navigation events
@@ -11,11 +11,6 @@
   :initialize-db
   (fn [_ _]
     db/default-db))
-
-(reg-event-db
-  :set-active-page
-  (fn [db [_ page]]
-    (assoc-in db [:page :curr] page)))
 
 ;; --------------
 ;; Drawer events
@@ -31,6 +26,21 @@
   (fn [db _]
     (assoc db :drawer-opened? false)))
 
+(reg-event-fx
+  :drawer-navigate
+  (fn [{db :db} [_ page]]
+    {:dispatch-n      (list [:close-drawer] [:clear-page-args])
+     :router-navigate page}))
+
+;; ----------
+;; Navigation
+;; ----------
+
+(reg-event-db
+  :set-active-page
+  (fn [db [_ page]]
+    (assoc-in db [:page :curr] page)))
+
 (reg-event-db
   :set-path-args
   (fn [db [_ args]]
@@ -41,19 +51,15 @@
   (fn [db _]
     (assoc-in db [:page :args] [])))
 
-(reg-event-db
-  :drawer-navigate
-  (fn [db [_ page]]
-    (routes/accountant-navigate! page)
-    (dispatch [:close-drawer])
-    (dispatch [:clear-page-args])
-    (assoc-in db [:page :curr] page)))
+(reg-fx
+  :router-navigate
+  (fn [page]
+    (routes/accountant-navigate! page)))
 
-(reg-event-db
+(reg-event-fx
   :navigate-to
-  (fn [db [_ page]]
-    (routes/accountant-navigate! page)
-    (assoc-in db [:page :curr] page)))
+  (fn [_ [_ page]]
+    {:router-navigate page}))
 
 
 ;; ---------------------

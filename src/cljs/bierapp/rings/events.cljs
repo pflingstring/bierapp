@@ -8,22 +8,22 @@
 ;; Add rings events
 ;; ----------------
 
-(reg-event-db
+(reg-event-fx
   :add-consumption-entry
-  (fn [db [_ name]]
+  (fn [{db :db} [_ name]]
     (let [path [:rings (:current-user-id db)]]
-      (dispatch [:set-current-name-input name])
-      (assoc-in db path {:name  name
-                         :rings {}}))))
+      {:dispatch [:set-current-name-input name]
+       :db       (assoc-in db path {:name  name
+                                    :rings {}})})))
 
 (reg-event-db
   :add-ring-color
-  (fn [db [_ color]]
-    (dispatch [:set-current-ring-color (-> color keys first)])
+  (fn [{db :db} [_ color]]
     (let [path [:rings (:current-user-id db) :rings]
           current-rings (get-in db path)]
-      (assoc-in db path (merge current-rings
-                               color)))))
+      {:dispatch [:set-current-ring-color (-> color keys first)]
+       :db       (assoc-in db path (merge current-rings
+                                          color))})))
 
 (reg-event-db
   :add-ring-number
@@ -120,12 +120,11 @@
                   :on-success      [:clear-current-rings]
                   :on-failure      [:upload-rings-error]}}))
 
-(reg-event-db
+(reg-event-fx
   :clear-current-rings
-  (fn [db _]
-    (dispatch [:enable-upload-rings-button])
-    (dispatch [:clear-upload-error])
-    (assoc db :rings {})))
+  (fn [{db :db} _]
+    {:dispatch-n (list [:enable-upload-rings-button] [:clear-upload-error])
+     :db         (assoc db :rings {})}))
 
 (reg-event-db
   :clear-upload-error
@@ -135,6 +134,5 @@
 (reg-event-db
   :upload-rings-error
   (fn [db [_ error]]
-    ;(dispatch [:enable-upload-rings-button])
     (assoc db :upload-rings-error (str "Error uploading rings\n"
                                        (subs 0 300 error)))))
